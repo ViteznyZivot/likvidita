@@ -1,0 +1,1331 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Likvidita - Interaktivní kurz</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            box-sizing: border-box;
+        }
+        
+        .drag-item {
+            transition: all 0.3s ease;
+        }
+        
+        .drag-item:hover {
+            transform: scale(1.05);
+        }
+        
+        .drop-zone {
+            transition: all 0.3s ease;
+        }
+        
+        .drop-zone.drag-over {
+            background-color: #e0f2fe;
+            border-color: #0284c7;
+        }
+        
+        .progress-bar {
+            transition: width 0.5s ease;
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .asset-card {
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .asset-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+        }
+        
+        .asset-card.selected {
+            border-color: #0284c7;
+            background-color: #f0f9ff;
+        }
+        
+        .slider {
+            -webkit-appearance: none;
+            appearance: none;
+            height: 8px;
+            border-radius: 5px;
+            background: #d3d3d3;
+            outline: none;
+        }
+        
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #0284c7;
+            cursor: pointer;
+        }
+        
+        .slider::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #0284c7;
+            cursor: pointer;
+            border: none;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-blue-50 to-indigo-100 min-h-screen font-sans">
+    <div class="container mx-auto px-4 py-8 max-w-4xl">
+        <!-- Progress Bar -->
+        <div class="mb-8">
+            <div class="bg-white rounded-full h-3 shadow-inner">
+                <div id="progressBar" class="progress-bar bg-gradient-to-r from-blue-500 to-indigo-600 h-3 rounded-full" style="width: 0%"></div>
+            </div>
+            <div class="text-center mt-2 text-sm text-gray-600">
+                <span id="progressText">Úvod</span>
+            </div>
+        </div>
+
+        <!-- Úvodní stránka -->
+        <div id="intro" class="bg-white rounded-2xl shadow-xl p-8 text-center fade-in">
+            <div class="mb-6">
+                <div class="text-6xl mb-4">💰</div>
+                <h1 class="text-4xl font-bold text-gray-800 mb-4">Likvidita – peníze, které můžeš použít</h1>
+                <p class="text-lg text-gray-600 mb-6 max-w-2xl mx-auto">
+                    Naučte se, co je likvidita, proč je důležitá pro vaše finance a jak ji efektivně řídit. 
+                    Kurz obsahuje praktické příklady, kalkulačky a simulace pro lepší pochopení.
+                </p>
+            </div>
+            
+            <div class="grid md:grid-cols-3 gap-6 mb-8">
+                <div class="bg-blue-50 p-4 rounded-lg">
+                    <div class="text-2xl mb-2">📚</div>
+                    <h3 class="font-semibold text-gray-800">5 lekcí</h3>
+                    <p class="text-sm text-gray-600">Postupně se naučíte vše o likviditě</p>
+                </div>
+                <div class="bg-green-50 p-4 rounded-lg">
+                    <div class="text-2xl mb-2">🧮</div>
+                    <h3 class="font-semibold text-gray-800">Interaktivní nástroje</h3>
+                    <p class="text-sm text-gray-600">Kalkulačky a simulace pro praxi</p>
+                </div>
+                <div class="bg-purple-50 p-4 rounded-lg">
+                    <div class="text-2xl mb-2">🎯</div>
+                    <h3 class="font-semibold text-gray-800">Závěrečný kvíz</h3>
+                    <p class="text-sm text-gray-600">Otestujte si své znalosti</p>
+                </div>
+            </div>
+            
+            <button onclick="startCourse()" class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-8 py-4 rounded-full text-lg font-semibold hover:from-blue-700 hover:to-indigo-700 transform hover:scale-105 transition-all duration-300 shadow-lg">
+                Začít kurz 🚀
+            </button>
+        </div>
+
+        <!-- Lekce 1: Co je likvidita -->
+        <div id="lesson1" class="bg-white rounded-2xl shadow-xl p-8 hidden fade-in">
+            <h2 class="text-3xl font-bold text-gray-800 mb-6">Lekce 1: Co je likvidita</h2>
+            
+            <div class="mb-8">
+                <p class="text-lg text-gray-700 mb-4">
+                    <strong>Likvidita</strong> je schopnost rychle přeměnit majetek na hotové peníze bez významné ztráty hodnoty. 
+                    Čím rychleji můžete něco prodat za spravedlivou cenu, tím je to likvidnější.
+                </p>
+                <p class="text-gray-600 mb-6">
+                    Klikněte na různé typy majetku a zjistěte, jak likvidní jsou:
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-6 mb-8">
+                <div class="asset-card bg-green-50 border-2 border-green-200 p-6 rounded-xl" onclick="showLiquidity('cash')">
+                    <div class="text-4xl mb-3 text-center">💵</div>
+                    <h3 class="text-xl font-semibold text-center mb-2">Hotovost</h3>
+                    <p class="text-sm text-gray-600 text-center">Peníze v peněžence nebo na účtu</p>
+                </div>
+                
+                <div class="asset-card bg-blue-50 border-2 border-blue-200 p-6 rounded-xl" onclick="showLiquidity('stocks')">
+                    <div class="text-4xl mb-3 text-center">📈</div>
+                    <h3 class="text-xl font-semibold text-center mb-2">Akcie</h3>
+                    <p class="text-sm text-gray-600 text-center">Podíly ve společnostech</p>
+                </div>
+                
+                <div class="asset-card bg-orange-50 border-2 border-orange-200 p-6 rounded-xl" onclick="showLiquidity('property')">
+                    <div class="text-4xl mb-3 text-center">🏠</div>
+                    <h3 class="text-xl font-semibold text-center mb-2">Nemovitost</h3>
+                    <p class="text-sm text-gray-600 text-center">Dům nebo byt</p>
+                </div>
+            </div>
+
+            <div id="liquidityInfo" class="bg-gray-50 p-6 rounded-xl mb-8 hidden">
+                <div id="liquidityContent"></div>
+            </div>
+
+            <div class="text-center">
+                <button onclick="goToIntro()" class="bg-gray-500 text-white px-6 py-3 rounded-lg hover:bg-gray-600 transition-colors mr-4">
+                    ← Zpět na úvod
+                </button>
+                <button onclick="nextLesson(2)" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors">
+                    Pokračovat na lekci 2 →
+                </button>
+            </div>
+        </div>
+
+        <!-- Lekce 2: Typy likvidity -->
+        <div id="lesson2" class="bg-white rounded-2xl shadow-xl p-8 hidden fade-in">
+            <h2 class="text-3xl font-bold text-gray-800 mb-6">Lekce 2: Typy likvidity</h2>
+            
+            <div class="mb-8">
+                <p class="text-lg text-gray-700 mb-6">
+                    Likviditu dělíme podle rychlosti přeměny na peníze. Přetáhněte aktiva do správných kategorií:
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-6 mb-8">
+                <div class="drop-zone bg-green-50 border-2 border-dashed border-green-300 p-4 rounded-xl min-h-32" data-category="immediate">
+                    <h3 class="font-semibold text-green-800 mb-2">Okamžitá likvidita</h3>
+                    <p class="text-sm text-green-600 mb-4">0-1 den</p>
+                    <div class="dropped-items"></div>
+                </div>
+                
+                <div class="drop-zone bg-yellow-50 border-2 border-dashed border-yellow-300 p-4 rounded-xl min-h-32" data-category="short">
+                    <h3 class="font-semibold text-yellow-800 mb-2">Krátkodobá likvidita</h3>
+                    <p class="text-sm text-yellow-600 mb-4">1-30 dní</p>
+                    <div class="dropped-items"></div>
+                </div>
+                
+                <div class="drop-zone bg-red-50 border-2 border-dashed border-red-300 p-4 rounded-xl min-h-32" data-category="long">
+                    <h3 class="font-semibold text-red-800 mb-2">Dlouhodobá likvidita</h3>
+                    <p class="text-sm text-red-600 mb-4">30+ dní</p>
+                    <div class="dropped-items"></div>
+                </div>
+            </div>
+
+            <div class="mb-8">
+                <h4 class="font-semibold mb-4">Přetáhněte aktiva do správných kategorií:</h4>
+                <div class="flex flex-wrap gap-3" id="dragItems">
+                    <div class="drag-item bg-white border-2 border-gray-300 px-4 py-2 rounded-lg cursor-move" draggable="true" data-correct="immediate">💵 Hotovost</div>
+                    <div class="drag-item bg-white border-2 border-gray-300 px-4 py-2 rounded-lg cursor-move" draggable="true" data-correct="immediate">🏦 Běžný účet</div>
+                    <div class="drag-item bg-white border-2 border-gray-300 px-4 py-2 rounded-lg cursor-move" draggable="true" data-correct="short">📈 Akcie velkých firem</div>
+                    <div class="drag-item bg-white border-2 border-gray-300 px-4 py-2 rounded-lg cursor-move" draggable="true" data-correct="short">💎 Zlato</div>
+                    <div class="drag-item bg-white border-2 border-gray-300 px-4 py-2 rounded-lg cursor-move" draggable="true" data-correct="long">🏠 Nemovitost</div>
+                    <div class="drag-item bg-white border-2 border-gray-300 px-4 py-2 rounded-lg cursor-move" draggable="true" data-correct="long">🎨 Umělecká díla</div>
+                </div>
+            </div>
+
+            <div id="lesson2Feedback" class="hidden mb-6"></div>
+
+            <div class="text-center">
+                <button onclick="previousLesson(1)" class="bg-gray-500 text-white px-6 py-3 rounded-lg hover:bg-gray-600 transition-colors mr-4">
+                    ← Zpět na lekci 1
+                </button>
+                <button id="checkLesson2" onclick="checkLesson2()" class="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors mr-4">
+                    Zkontrolovat odpovědi
+                </button>
+                <button id="nextLesson2" onclick="nextLesson(3)" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors hidden">
+                    Pokračovat na lekci 3 →
+                </button>
+            </div>
+        </div>
+
+        <!-- Lekce 3: Proč je likvidita důležitá -->
+        <div id="lesson3" class="bg-white rounded-2xl shadow-xl p-8 hidden fade-in">
+            <h2 class="text-3xl font-bold text-gray-800 mb-6">Lekce 3: Proč je likvidita důležitá</h2>
+            
+            <div class="mb-8">
+                <p class="text-lg text-gray-700 mb-6">
+                    Likvidita je klíčová pro zvládání neočekávaných situací. Vyzkoušejte si různé scénáře:
+                </p>
+            </div>
+
+            <div class="bg-yellow-50 border-l-4 border-yellow-400 p-6 mb-8">
+                <h3 class="font-semibold text-yellow-800 mb-2">Scénář: Neočekávaná oprava auta</h3>
+                <p class="text-yellow-700 mb-4">Vaše auto se pokazilo a oprava stojí 25 000 Kč. Musíte zaplatit do 3 dnů.</p>
+                
+                <div class="space-y-4">
+                    <div class="scenario-option bg-white p-4 rounded-lg cursor-pointer border-2 border-transparent hover:border-blue-300" onclick="selectScenario('cash', 25000)">
+                        <div class="flex items-center">
+                            <div class="text-2xl mr-3">💵</div>
+                            <div>
+                                <h4 class="font-semibold">Máte 30 000 Kč na účtu</h4>
+                                <p class="text-sm text-gray-600">Okamžitě dostupné</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="scenario-option bg-white p-4 rounded-lg cursor-pointer border-2 border-transparent hover:border-blue-300" onclick="selectScenario('stocks', 25000)">
+                        <div class="flex items-center">
+                            <div class="text-2xl mr-3">📈</div>
+                            <div>
+                                <h4 class="font-semibold">Máte akcie v hodnotě 50 000 Kč</h4>
+                                <p class="text-sm text-gray-600">Prodej trvá 1-2 dny</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="scenario-option bg-white p-4 rounded-lg cursor-pointer border-2 border-transparent hover:border-blue-300" onclick="selectScenario('property', 25000)">
+                        <div class="flex items-center">
+                            <div class="text-2xl mr-3">🏠</div>
+                            <div>
+                                <h4 class="font-semibold">Máte pouze nemovitost za 2 mil. Kč</h4>
+                                <p class="text-sm text-gray-600">Prodej trvá měsíce</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="scenarioResult" class="hidden mb-8"></div>
+
+            <div class="bg-blue-50 p-6 rounded-xl mb-8">
+                <h3 class="font-semibold text-blue-800 mb-4">Klíčové poznatky:</h3>
+                <ul class="space-y-2 text-blue-700">
+                    <li class="flex items-start"><span class="text-blue-500 mr-2">•</span> Likvidita vám dává flexibilitu při neočekávaných výdajích</li>
+                    <li class="flex items-start"><span class="text-blue-500 mr-2">•</span> Umožňuje využít investiční příležitosti</li>
+                    <li class="flex items-start"><span class="text-blue-500 mr-2">•</span> Snižuje stres z finančních nouzových situací</li>
+                    <li class="flex items-start"><span class="text-blue-500 mr-2">•</span> Pomáhá vyhnout se drahým půjčkám</li>
+                </ul>
+            </div>
+
+            <div class="text-center">
+                <button onclick="previousLesson(2)" class="bg-gray-500 text-white px-6 py-3 rounded-lg hover:bg-gray-600 transition-colors mr-4">
+                    ← Zpět na lekci 2
+                </button>
+                <button onclick="nextLesson(4)" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors">
+                    Pokračovat na lekci 4 →
+                </button>
+            </div>
+        </div>
+
+        <!-- Lekce 4: Jak měřit likviditu -->
+        <div id="lesson4" class="bg-white rounded-2xl shadow-xl p-8 hidden fade-in">
+            <h2 class="text-3xl font-bold text-gray-800 mb-6">Lekce 4: Jak měřit a sledovat likviditu</h2>
+            
+            <div class="mb-8">
+                <p class="text-lg text-gray-700 mb-6">
+                    Základní ukazatel likvidity: <strong>Krátkodobá aktiva ÷ Krátkodobé závazky</strong>
+                </p>
+                <p class="text-gray-600 mb-6">
+                    Zadejte své údaje a zjistěte svou likviditu:
+                </p>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-8 mb-8">
+                <div class="bg-green-50 p-6 rounded-xl">
+                    <h3 class="font-semibold text-green-800 mb-4">Krátkodobá aktiva (Kč)</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Hotovost a účty</label>
+                            <input type="number" id="cash" class="w-full p-3 border border-gray-300 rounded-lg" placeholder="0" oninput="calculateLiquidity()">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Spořicí účty</label>
+                            <input type="number" id="savings" class="w-full p-3 border border-gray-300 rounded-lg" placeholder="0" oninput="calculateLiquidity()">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Akcie a fondy</label>
+                            <input type="number" id="investments" class="w-full p-3 border border-gray-300 rounded-lg" placeholder="0" oninput="calculateLiquidity()">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-red-50 p-6 rounded-xl">
+                    <h3 class="font-semibold text-red-800 mb-4">Krátkodobé závazky (Kč)</h3>
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Měsíční výdaje</label>
+                            <input type="number" id="monthlyExpenses" class="w-full p-3 border border-gray-300 rounded-lg" placeholder="0" oninput="calculateLiquidity()">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Kreditní karty</label>
+                            <input type="number" id="creditCards" class="w-full p-3 border border-gray-300 rounded-lg" placeholder="0" oninput="calculateLiquidity()">
+                        </div>
+                        <div>
+                            <label class="block text-sm font-medium text-gray-700 mb-1">Krátkodobé půjčky</label>
+                            <input type="number" id="shortLoans" class="w-full p-3 border border-gray-300 rounded-lg" placeholder="0" oninput="calculateLiquidity()">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="liquidityResult" class="bg-gray-50 p-6 rounded-xl mb-8 hidden">
+                <div class="text-center mb-4">
+                    <h3 class="text-2xl font-bold text-gray-800">Váš ukazatel likvidity</h3>
+                    <div id="liquidityRatio" class="text-4xl font-bold mt-2"></div>
+                </div>
+                
+                <div class="w-full bg-gray-200 rounded-full h-4 mb-4">
+                    <div id="liquidityBar" class="h-4 rounded-full transition-all duration-500"></div>
+                </div>
+                
+                <div id="liquidityInterpretation" class="text-center"></div>
+            </div>
+
+            <div class="bg-blue-50 p-6 rounded-xl mb-8">
+                <h3 class="font-semibold text-blue-800 mb-2">Interpretace výsledků:</h3>
+                <ul class="space-y-1 text-blue-700 text-sm">
+                    <li><strong>Nad 2,0:</strong> Výborná likvidita</li>
+                    <li><strong>1,5 - 2,0:</strong> Dobrá likvidita</li>
+                    <li><strong>1,0 - 1,5:</strong> Přijatelná likvidita</li>
+                    <li><strong>Pod 1,0:</strong> Nízká likvidita - pozor!</li>
+                </ul>
+            </div>
+
+            <div class="text-center">
+                <button onclick="previousLesson(3)" class="bg-gray-500 text-white px-6 py-3 rounded-lg hover:bg-gray-600 transition-colors mr-4">
+                    ← Zpět na lekci 3
+                </button>
+                <button onclick="nextLesson(5)" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors">
+                    Pokračovat na lekci 5 →
+                </button>
+            </div>
+        </div>
+
+        <!-- Lekce 5: Jak zlepšit likviditu -->
+        <div id="lesson5" class="bg-white rounded-2xl shadow-xl p-8 hidden fade-in">
+            <h2 class="text-3xl font-bold text-gray-800 mb-6">Lekce 5: Jak zlepšit likviditu</h2>
+            
+            <div class="mb-8">
+                <p class="text-lg text-gray-700 mb-6">
+                    Vyzkoušejte si, jak rozdělit 100 000 Kč mezi různé typy aktiv s různou likviditou:
+                </p>
+            </div>
+
+            <div class="bg-gray-50 p-6 rounded-xl mb-8">
+                <h3 class="font-semibold text-gray-800 mb-4">Rozdělení 100 000 Kč</h3>
+                
+                <div class="space-y-6">
+                    <div>
+                        <div class="flex justify-between items-center mb-2">
+                            <label class="font-medium text-green-700">💵 Hotovost (okamžitá likvidita)</label>
+                            <span id="cashAmount" class="font-bold text-green-700">20 000 Kč</span>
+                        </div>
+                        <input type="range" id="cashSlider" class="slider w-full" min="0" max="100000" value="20000" step="5000" oninput="updateAllocation()">
+                    </div>
+                    
+                    <div>
+                        <div class="flex justify-between items-center mb-2">
+                            <label class="font-medium text-blue-700">💰 Spořicí účet (krátkodobá likvidita)</label>
+                            <span id="savingsAmount" class="font-bold text-blue-700">30 000 Kč</span>
+                        </div>
+                        <input type="range" id="savingsSlider" class="slider w-full" min="0" max="100000" value="30000" step="5000" oninput="updateAllocation()">
+                    </div>
+                    
+                    <div>
+                        <div class="flex justify-between items-center mb-2">
+                            <label class="font-medium text-purple-700">📈 Akcie/fondy (střední likvidita)</label>
+                            <span id="stocksAmount" class="font-bold text-purple-700">30 000 Kč</span>
+                        </div>
+                        <input type="range" id="stocksSlider" class="slider w-full" min="0" max="100000" value="30000" step="5000" oninput="updateAllocation()">
+                    </div>
+                    
+                    <div>
+                        <div class="flex justify-between items-center mb-2">
+                            <label class="font-medium text-red-700">🏠 Dlouhodobé investice (nízká likvidita)</label>
+                            <span id="longTermAmount" class="font-bold text-red-700">20 000 Kč</span>
+                        </div>
+                        <input type="range" id="longTermSlider" class="slider w-full" min="0" max="100000" value="20000" step="5000" oninput="updateAllocation()">
+                    </div>
+                </div>
+                
+                <div class="mt-6 p-4 bg-white rounded-lg">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="font-semibold">Celkem:</span>
+                        <span id="totalAmount" class="font-bold text-lg">100 000 Kč</span>
+                    </div>
+                    <div id="allocationWarning" class="text-red-600 text-sm hidden">
+                        ⚠️ Celková částka musí být 100 000 Kč
+                    </div>
+                </div>
+            </div>
+
+            <div id="allocationAnalysis" class="bg-blue-50 p-6 rounded-xl mb-8">
+                <h3 class="font-semibold text-blue-800 mb-4">Analýza vašeho rozdělení:</h3>
+                <div id="analysisContent"></div>
+            </div>
+
+            <div class="bg-green-50 p-6 rounded-xl mb-8">
+                <h3 class="font-semibold text-green-800 mb-4">Tipy pro zlepšení likvidity:</h3>
+                <div class="grid md:grid-cols-2 gap-4">
+                    <div class="space-y-2">
+                        <div class="flex items-start">
+                            <span class="text-green-600 mr-2">✓</span>
+                            <span class="text-sm">Udržujte nouzový fond na 3-6 měsíců výdajů</span>
+                        </div>
+                        <div class="flex items-start">
+                            <span class="text-green-600 mr-2">✓</span>
+                            <span class="text-sm">Diverzifikujte investice podle likvidity</span>
+                        </div>
+                        <div class="flex items-start">
+                            <span class="text-green-600 mr-2">✓</span>
+                            <span class="text-sm">Sledujte své cash flow pravidelně</span>
+                        </div>
+                    </div>
+                    <div class="space-y-2">
+                        <div class="flex items-start">
+                            <span class="text-green-600 mr-2">✓</span>
+                            <span class="text-sm">Využívajte spořicí účty s rychlým přístupem</span>
+                        </div>
+                        <div class="flex items-start">
+                            <span class="text-green-600 mr-2">✓</span>
+                            <span class="text-sm">Vyhněte se příliš mnoha dlouhodobým investicím</span>
+                        </div>
+                        <div class="flex items-start">
+                            <span class="text-green-600 mr-2">✓</span>
+                            <span class="text-sm">Plánujte větší výdaje dopředu</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="text-center">
+                <button onclick="previousLesson(4)" class="bg-gray-500 text-white px-6 py-3 rounded-lg hover:bg-gray-600 transition-colors mr-4">
+                    ← Zpět na lekci 4
+                </button>
+                <button onclick="startQuiz()" class="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-8 py-4 rounded-full text-lg font-semibold hover:from-purple-700 hover:to-pink-700 transform hover:scale-105 transition-all duration-300 shadow-lg">
+                    Přejít na závěrečný kvíz 🎯
+                </button>
+            </div>
+        </div>
+
+        <!-- Kvíz -->
+        <div id="quiz" class="bg-white rounded-2xl shadow-xl p-8 hidden fade-in">
+            <h2 class="text-3xl font-bold text-gray-800 mb-6">Závěrečný kvíz</h2>
+            
+            <div class="mb-6">
+                <div class="flex justify-between items-center mb-2">
+                    <span class="text-sm text-gray-600">Otázka <span id="currentQuestion">1</span> z 10</span>
+                    <span class="text-sm text-gray-600">Skóre: <span id="currentScore">0</span>/10</span>
+                </div>
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                    <div id="quizProgress" class="bg-blue-600 h-2 rounded-full transition-all duration-300" style="width: 10%"></div>
+                </div>
+            </div>
+
+            <div id="questionContainer" class="mb-8">
+                <h3 id="questionText" class="text-xl font-semibold text-gray-800 mb-6"></h3>
+                <div id="answersContainer" class="space-y-3"></div>
+            </div>
+
+            <div id="questionFeedback" class="hidden mb-6"></div>
+
+            <div class="text-center">
+                <button onclick="goBackToLesson5()" class="bg-gray-500 text-white px-6 py-3 rounded-lg hover:bg-gray-600 transition-colors mr-4">
+                    ← Zpět na lekci 5
+                </button>
+                <button id="nextQuestionBtn" onclick="nextQuestion()" class="bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors hidden">
+                    Další otázka →
+                </button>
+            </div>
+        </div>
+
+        <!-- Výsledky kvízu -->
+        <div id="quizResults" class="bg-white rounded-2xl shadow-xl p-8 hidden fade-in">
+            <div class="text-center mb-8">
+                <div class="text-6xl mb-4" id="resultEmoji">🎉</div>
+                <h2 class="text-3xl font-bold text-gray-800 mb-4">Kvíz dokončen!</h2>
+                <div class="text-4xl font-bold mb-2" id="finalScore"></div>
+                <div class="text-lg text-gray-600" id="scorePercentage"></div>
+            </div>
+
+            <div id="resultAnalysis" class="bg-gray-50 p-6 rounded-xl mb-8"></div>
+
+            <div class="bg-blue-50 p-6 rounded-xl mb-8">
+                <h3 class="font-semibold text-blue-800 mb-4">Co dělat dál:</h3>
+                <div id="recommendations"></div>
+            </div>
+
+            <div class="text-center">
+                <button onclick="restartCourse()" class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white px-8 py-4 rounded-full text-lg font-semibold hover:from-blue-700 hover:to-indigo-700 transform hover:scale-105 transition-all duration-300 shadow-lg">
+                    Projít kurz znovu
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentLesson = 0;
+        let quizQuestions = [
+            {
+                question: "Co je likvidita?",
+                answers: [
+                    "Množství peněz na účtu",
+                    "Schopnost rychle přeměnit majetek na hotové peníze",
+                    "Celková hodnota majetku",
+                    "Měsíční příjem"
+                ],
+                correct: 1
+            },
+            {
+                question: "Které aktivum má nejvyšší likviditu?",
+                answers: [
+                    "Nemovitost",
+                    "Akcie",
+                    "Hotovost",
+                    "Umělecká díla"
+                ],
+                correct: 2
+            },
+            {
+                question: "Jak dlouho trvá okamžitá likvidita?",
+                answers: [
+                    "0-1 den",
+                    "1-7 dní",
+                    "1-30 dní",
+                    "30+ dní"
+                ],
+                correct: 0
+            },
+            {
+                question: "Proč je likvidita důležitá?",
+                answers: [
+                    "Pouze pro investování",
+                    "Pro zvládání neočekávaných výdajů",
+                    "Pouze pro podnikatele",
+                    "Není důležitá"
+                ],
+                correct: 1
+            },
+            {
+                question: "Jak se počítá základní ukazatel likvidity?",
+                answers: [
+                    "Příjmy ÷ Výdaje",
+                    "Aktiva ÷ Pasiva",
+                    "Krátkodobá aktiva ÷ Krátkodobé závazky",
+                    "Hotovost ÷ Investice"
+                ],
+                correct: 2
+            },
+            {
+                question: "Jaký je ideální ukazatel likvidity?",
+                answers: [
+                    "0,5 - 1,0",
+                    "1,0 - 1,5",
+                    "1,5 - 2,0 a více",
+                    "Nezáleží na tom"
+                ],
+                correct: 2
+            },
+            {
+                question: "Kolik měsíců výdajů by měl obsahovat nouzový fond?",
+                answers: [
+                    "1-2 měsíce",
+                    "3-6 měsíců",
+                    "12 měsíců",
+                    "24 měsíců"
+                ],
+                correct: 1
+            },
+            {
+                question: "Které aktivum patří do dlouhodobé likvidity?",
+                answers: [
+                    "Běžný účet",
+                    "Spořicí účet",
+                    "Akcie velkých firem",
+                    "Nemovitost"
+                ],
+                correct: 3
+            },
+            {
+                question: "Co se stane, když máte nízkou likviditu?",
+                answers: [
+                    "Nic se nestane",
+                    "Můžete mít problém s neočekávanými výdaji",
+                    "Budete mít více peněz",
+                    "Budete lépe investovat"
+                ],
+                correct: 1
+            },
+            {
+                question: "Jak můžete zlepšit svou likviditu?",
+                answers: [
+                    "Investovat vše do nemovitostí",
+                    "Udržovat část peněz v hotovosti a na spořicích účtech",
+                    "Nakupovat pouze akcie",
+                    "Půjčovat si peníze"
+                ],
+                correct: 1
+            }
+        ];
+        
+        let currentQuestionIndex = 0;
+        let quizScore = 0;
+        let selectedAnswer = null;
+
+        function updateProgress(lesson) {
+            const progress = (lesson / 7) * 100;
+            document.getElementById('progressBar').style.width = progress + '%';
+            
+            const progressTexts = ['Úvod', 'Lekce 1', 'Lekce 2', 'Lekce 3', 'Lekce 4', 'Lekce 5', 'Kvíz', 'Dokončeno'];
+            document.getElementById('progressText').textContent = progressTexts[lesson];
+        }
+
+        function startCourse() {
+            document.getElementById('intro').classList.add('hidden');
+            document.getElementById('lesson1').classList.remove('hidden');
+            currentLesson = 1;
+            updateProgress(1);
+        }
+
+        function nextLesson(lessonNumber) {
+            // Hide current lesson
+            document.querySelectorAll('[id^="lesson"]').forEach(el => el.classList.add('hidden'));
+            
+            // Show next lesson
+            document.getElementById('lesson' + lessonNumber).classList.remove('hidden');
+            currentLesson = lessonNumber;
+            updateProgress(lessonNumber);
+        }
+
+        function showLiquidity(type) {
+            const info = document.getElementById('liquidityInfo');
+            const content = document.getElementById('liquidityContent');
+            
+            // Remove selected class from all cards
+            document.querySelectorAll('.asset-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            
+            // Add selected class to clicked card
+            event.target.closest('.asset-card').classList.add('selected');
+            
+            let liquidityData = {
+                cash: {
+                    title: "💵 Hotovost",
+                    liquidity: "Nejvyšší likvidita",
+                    time: "Okamžitě dostupná",
+                    description: "Hotovost je nejlikvidnější aktivum. Můžete ji použít kdykoli bez jakéhokoli zpoždění nebo ztráty hodnoty.",
+                    pros: ["Okamžitá dostupnost", "Žádné transakční náklady", "Stabilní hodnota"],
+                    cons: ["Nízký nebo žádný výnos", "Ztráta hodnoty kvůli inflaci"]
+                },
+                stocks: {
+                    title: "📈 Akcie",
+                    liquidity: "Střední likvidita",
+                    time: "1-3 dny",
+                    description: "Akcie velkých společností lze rychle prodat na burze, ale jejich hodnota kolísá a prodej trvá několik dní.",
+                    pros: ["Potenciál růstu hodnoty", "Relativně rychlý prodej", "Dividendy"],
+                    cons: ["Kolísání hodnoty", "Transakční poplatky", "Tržní riziko"]
+                },
+                property: {
+                    title: "🏠 Nemovitost",
+                    liquidity: "Nízká likvidita",
+                    time: "Měsíce až roky",
+                    description: "Nemovitosti mají nízkou likviditu. Prodej může trvat měsíce a často musíte snížit cenu pro rychlejší prodej.",
+                    pros: ["Dlouhodobý růst hodnoty", "Pasivní příjem z nájmu", "Ochrana před inflací"],
+                    cons: ["Velmi pomalý prodej", "Vysoké transakční náklady", "Nutnost snížení ceny pro rychlý prodej"]
+                }
+            };
+            
+            const data = liquidityData[type];
+            content.innerHTML = `
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div>
+                        <h3 class="text-xl font-semibold mb-2">${data.title}</h3>
+                        <div class="mb-4">
+                            <span class="inline-block bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">${data.liquidity}</span>
+                            <span class="inline-block bg-gray-100 text-gray-800 px-3 py-1 rounded-full text-sm ml-2">⏱️ ${data.time}</span>
+                        </div>
+                        <p class="text-gray-700 mb-4">${data.description}</p>
+                    </div>
+                    <div>
+                        <div class="mb-4">
+                            <h4 class="font-semibold text-green-700 mb-2">✅ Výhody:</h4>
+                            <ul class="text-sm text-green-600 space-y-1">
+                                ${data.pros.map(pro => `<li>• ${pro}</li>`).join('')}
+                            </ul>
+                        </div>
+                        <div>
+                            <h4 class="font-semibold text-red-700 mb-2">❌ Nevýhody:</h4>
+                            <ul class="text-sm text-red-600 space-y-1">
+                                ${data.cons.map(con => `<li>• ${con}</li>`).join('')}
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            info.classList.remove('hidden');
+        }
+
+        // Drag and Drop functionality for Lesson 2
+        let draggedElement = null;
+
+        document.addEventListener('DOMContentLoaded', function() {
+            setupDragAndDrop();
+        });
+
+        function setupDragAndDrop() {
+            const dragItems = document.querySelectorAll('.drag-item');
+            const dropZones = document.querySelectorAll('.drop-zone');
+
+            dragItems.forEach(item => {
+                item.addEventListener('dragstart', function(e) {
+                    draggedElement = this;
+                    this.style.opacity = '0.5';
+                });
+
+                item.addEventListener('dragend', function(e) {
+                    this.style.opacity = '1';
+                });
+            });
+
+            dropZones.forEach(zone => {
+                zone.addEventListener('dragover', function(e) {
+                    e.preventDefault();
+                    this.classList.add('drag-over');
+                });
+
+                zone.addEventListener('dragleave', function(e) {
+                    this.classList.remove('drag-over');
+                });
+
+                zone.addEventListener('drop', function(e) {
+                    e.preventDefault();
+                    this.classList.remove('drag-over');
+                    
+                    if (draggedElement) {
+                        const droppedItems = this.querySelector('.dropped-items');
+                        droppedItems.appendChild(draggedElement);
+                        draggedElement = null;
+                    }
+                });
+            });
+        }
+
+        function checkLesson2() {
+            const dropZones = document.querySelectorAll('.drop-zone');
+            let correct = 0;
+            let total = 0;
+            let feedback = '';
+
+            dropZones.forEach(zone => {
+                const category = zone.dataset.category;
+                const items = zone.querySelectorAll('.drag-item');
+                
+                items.forEach(item => {
+                    total++;
+                    const correctCategory = item.dataset.correct;
+                    if (category === correctCategory) {
+                        correct++;
+                        item.classList.add('bg-green-100', 'border-green-500');
+                    } else {
+                        item.classList.add('bg-red-100', 'border-red-500');
+                    }
+                });
+            });
+
+            const percentage = Math.round((correct / total) * 100);
+            
+            if (percentage >= 80) {
+                feedback = `<div class="bg-green-50 border border-green-200 p-4 rounded-lg">
+                    <h4 class="font-semibold text-green-800">Výborně! 🎉</h4>
+                    <p class="text-green-700">Správně jste zařadili ${correct} z ${total} aktiv (${percentage}%). Rozumíte typům likvidity!</p>
+                </div>`;
+            } else if (percentage >= 60) {
+                feedback = `<div class="bg-yellow-50 border border-yellow-200 p-4 rounded-lg">
+                    <h4 class="font-semibold text-yellow-800">Dobře! 👍</h4>
+                    <p class="text-yellow-700">Správně jste zařadili ${correct} z ${total} aktiv (${percentage}%). Ještě si projděte typy likvidity.</p>
+                </div>`;
+            } else {
+                feedback = `<div class="bg-red-50 border border-red-200 p-4 rounded-lg">
+                    <h4 class="font-semibold text-red-800">Zkuste to znovu 🤔</h4>
+                    <p class="text-red-700">Správně jste zařadili pouze ${correct} z ${total} aktiv (${percentage}%). Přečtěte si znovu o typech likvidity.</p>
+                </div>`;
+            }
+
+            document.getElementById('lesson2Feedback').innerHTML = feedback;
+            document.getElementById('lesson2Feedback').classList.remove('hidden');
+            document.getElementById('checkLesson2').classList.add('hidden');
+            document.getElementById('nextLesson2').classList.remove('hidden');
+        }
+
+        function selectScenario(type, amount) {
+            // Remove selected class from all options
+            document.querySelectorAll('.scenario-option').forEach(option => {
+                option.classList.remove('border-blue-500', 'bg-blue-50');
+            });
+            
+            // Add selected class to clicked option
+            event.target.closest('.scenario-option').classList.add('border-blue-500', 'bg-blue-50');
+            
+            const resultDiv = document.getElementById('scenarioResult');
+            let result = '';
+            
+            switch(type) {
+                case 'cash':
+                    result = `
+                        <div class="bg-green-50 border border-green-200 p-6 rounded-xl">
+                            <h4 class="font-semibold text-green-800 mb-2">✅ Perfektní řešení!</h4>
+                            <p class="text-green-700 mb-3">Máte dostatek hotovosti na pokrytí opravy. Můžete zaplatit okamžitě bez jakýchkoli problémů.</p>
+                            <div class="text-sm text-green-600">
+                                <strong>Výhody:</strong> Žádné poplatky, okamžité řešení, zůstává vám ještě 5 000 Kč jako rezerva.
+                            </div>
+                        </div>
+                    `;
+                    break;
+                case 'stocks':
+                    result = `
+                        <div class="bg-yellow-50 border border-yellow-200 p-6 rounded-xl">
+                            <h4 class="font-semibold text-yellow-800 mb-2">⚠️ Možné, ale s riziky</h4>
+                            <p class="text-yellow-700 mb-3">Můžete prodat akcie, ale prodej trvá 1-2 dny a jejich hodnota může klesnout. Navíc zaplatíte poplatky za prodej.</p>
+                            <div class="text-sm text-yellow-600">
+                                <strong>Rizika:</strong> Ztráta hodnoty, poplatky za prodej, zpoždění platby.
+                            </div>
+                        </div>
+                    `;
+                    break;
+                case 'property':
+                    result = `
+                        <div class="bg-red-50 border border-red-200 p-6 rounded-xl">
+                            <h4 class="font-semibold text-red-800 mb-2">❌ Problematické řešení</h4>
+                            <p class="text-red-700 mb-3">Nemovitost nelze rychle prodat. Budete muset vzít půjčku nebo najít jiné řešení. Prodej nemovitosti trvá měsíce.</p>
+                            <div class="text-sm text-red-600">
+                                <strong>Důsledky:</strong> Nutnost půjčky, vysoké úroky, stres z časového tlaku.
+                            </div>
+                        </div>
+                    `;
+                    break;
+            }
+            
+            resultDiv.innerHTML = result;
+            resultDiv.classList.remove('hidden');
+        }
+
+        function calculateLiquidity() {
+            const cash = parseFloat(document.getElementById('cash').value) || 0;
+            const savings = parseFloat(document.getElementById('savings').value) || 0;
+            const investments = parseFloat(document.getElementById('investments').value) || 0;
+            const monthlyExpenses = parseFloat(document.getElementById('monthlyExpenses').value) || 0;
+            const creditCards = parseFloat(document.getElementById('creditCards').value) || 0;
+            const shortLoans = parseFloat(document.getElementById('shortLoans').value) || 0;
+
+            const shortTermAssets = cash + savings + investments;
+            const shortTermLiabilities = monthlyExpenses + creditCards + shortLoans;
+
+            if (shortTermLiabilities === 0) {
+                document.getElementById('liquidityResult').classList.add('hidden');
+                return;
+            }
+
+            const ratio = shortTermAssets / shortTermLiabilities;
+            
+            document.getElementById('liquidityRatio').textContent = ratio.toFixed(2);
+            
+            let barColor, interpretation;
+            
+            if (ratio >= 2.0) {
+                barColor = 'bg-green-500';
+                interpretation = `<div class="text-green-700">
+                    <strong>Výborná likvidita!</strong><br>
+                    Máte více než dostatečné rezervy pro pokrytí krátkodobých závazků.
+                </div>`;
+            } else if (ratio >= 1.5) {
+                barColor = 'bg-blue-500';
+                interpretation = `<div class="text-blue-700">
+                    <strong>Dobrá likvidita!</strong><br>
+                    Vaše finanční situace je stabilní s dostatečnými rezervami.
+                </div>`;
+            } else if (ratio >= 1.0) {
+                barColor = 'bg-yellow-500';
+                interpretation = `<div class="text-yellow-700">
+                    <strong>Přijatelná likvidita</strong><br>
+                    Pokrýváte základní potřeby, ale měli byste zvýšit rezervy.
+                </div>`;
+            } else {
+                barColor = 'bg-red-500';
+                interpretation = `<div class="text-red-700">
+                    <strong>Nízká likvidita - pozor!</strong><br>
+                    Nemáte dostatečné rezervy. Doporučujeme okamžitě zlepšit situaci.
+                </div>`;
+            }
+            
+            const barWidth = Math.min(ratio * 50, 100);
+            document.getElementById('liquidityBar').className = `h-4 rounded-full transition-all duration-500 ${barColor}`;
+            document.getElementById('liquidityBar').style.width = barWidth + '%';
+            
+            document.getElementById('liquidityInterpretation').innerHTML = interpretation;
+            document.getElementById('liquidityResult').classList.remove('hidden');
+        }
+
+        function updateAllocation() {
+            const cash = parseInt(document.getElementById('cashSlider').value);
+            const savings = parseInt(document.getElementById('savingsSlider').value);
+            const stocks = parseInt(document.getElementById('stocksSlider').value);
+            const longTerm = parseInt(document.getElementById('longTermSlider').value);
+            
+            const total = cash + savings + stocks + longTerm;
+            
+            // Update display amounts
+            document.getElementById('cashAmount').textContent = cash.toLocaleString() + ' Kč';
+            document.getElementById('savingsAmount').textContent = savings.toLocaleString() + ' Kč';
+            document.getElementById('stocksAmount').textContent = stocks.toLocaleString() + ' Kč';
+            document.getElementById('longTermAmount').textContent = longTerm.toLocaleString() + ' Kč';
+            document.getElementById('totalAmount').textContent = total.toLocaleString() + ' Kč';
+            
+            // Show warning if total is not 100,000
+            const warning = document.getElementById('allocationWarning');
+            if (total !== 100000) {
+                warning.classList.remove('hidden');
+                warning.textContent = `⚠️ Celková částka je ${total.toLocaleString()} Kč, měla by být 100 000 Kč`;
+            } else {
+                warning.classList.add('hidden');
+            }
+            
+            // Analyze allocation
+            analyzeAllocation(cash, savings, stocks, longTerm);
+        }
+
+        function analyzeAllocation(cash, savings, stocks, longTerm) {
+            const total = cash + savings + stocks + longTerm;
+            
+            const cashPercent = (cash / 100000) * 100;
+            const savingsPercent = (savings / 100000) * 100;
+            const stocksPercent = (stocks / 100000) * 100;
+            const longTermPercent = (longTerm / 100000) * 100;
+            
+            let analysis = '<div class="space-y-3">';
+            
+            // Immediate liquidity analysis
+            const immediateLiquidity = cashPercent;
+            if (immediateLiquidity >= 20) {
+                analysis += `<div class="flex items-start"><span class="text-green-500 mr-2">✓</span><span class="text-sm">Dobrá okamžitá likvidita (${immediateLiquidity.toFixed(0)}%) pro nouzové situace</span></div>`;
+            } else if (immediateLiquidity >= 10) {
+                analysis += `<div class="flex items-start"><span class="text-yellow-500 mr-2">⚠</span><span class="text-sm">Přijatelná okamžitá likvidita (${immediateLiquidity.toFixed(0)}%), zvažte zvýšení</span></div>`;
+            } else {
+                analysis += `<div class="flex items-start"><span class="text-red-500 mr-2">✗</span><span class="text-sm">Nízká okamžitá likvidita (${immediateLiquidity.toFixed(0)}%) - riziko při nouzových situacích</span></div>`;
+            }
+            
+            // Short-term liquidity analysis
+            const shortTermLiquidity = cashPercent + savingsPercent;
+            if (shortTermLiquidity >= 40) {
+                analysis += `<div class="flex items-start"><span class="text-green-500 mr-2">✓</span><span class="text-sm">Výborná krátkodobá likvidita (${shortTermLiquidity.toFixed(0)}%)</span></div>`;
+            } else if (shortTermLiquidity >= 25) {
+                analysis += `<div class="flex items-start"><span class="text-yellow-500 mr-2">⚠</span><span class="text-sm">Přijatelná krátkodobá likvidita (${shortTermLiquidity.toFixed(0)}%)</span></div>`;
+            } else {
+                analysis += `<div class="flex items-start"><span class="text-red-500 mr-2">✗</span><span class="text-sm">Nízká krátkodobá likvidita (${shortTermLiquidity.toFixed(0)}%)</span></div>`;
+            }
+            
+            // Investment balance analysis
+            if (stocksPercent >= 20 && stocksPercent <= 40) {
+                analysis += `<div class="flex items-start"><span class="text-green-500 mr-2">✓</span><span class="text-sm">Vyvážené investice se střední likviditou (${stocksPercent.toFixed(0)}%)</span></div>`;
+            } else if (stocksPercent > 40) {
+                analysis += `<div class="flex items-start"><span class="text-yellow-500 mr-2">⚠</span><span class="text-sm">Vysoké investice (${stocksPercent.toFixed(0)}%) - může snížit likviditu v krizi</span></div>`;
+            } else if (stocksPercent > 0) {
+                analysis += `<div class="flex items-start"><span class="text-blue-500 mr-2">ℹ</span><span class="text-sm">Nízké investice (${stocksPercent.toFixed(0)}%) - zvažte zvýšení pro růst</span></div>`;
+            }
+            
+            // Long-term investment analysis
+            if (longTermPercent <= 30 && longTermPercent > 0) {
+                analysis += `<div class="flex items-start"><span class="text-green-500 mr-2">✓</span><span class="text-sm">Rozumná alokace do dlouhodobých investic (${longTermPercent.toFixed(0)}%)</span></div>`;
+            } else if (longTermPercent > 30) {
+                analysis += `<div class="flex items-start"><span class="text-yellow-500 mr-2">⚠</span><span class="text-sm">Vysoká alokace do dlouhodobých investic (${longTermPercent.toFixed(0)}%) může snížit flexibilitu</span></div>`;
+            } else if (longTermPercent === 0) {
+                analysis += `<div class="flex items-start"><span class="text-blue-500 mr-2">ℹ</span><span class="text-sm">Žádné dlouhodobé investice - zvažte přidání pro budoucí růst</span></div>`;
+            }
+            
+            // Overall balance assessment
+            if (total !== 100000) {
+                analysis += `<div class="flex items-start"><span class="text-red-500 mr-2">⚠</span><span class="text-sm"><strong>Celkem: ${total.toLocaleString()} Kč - upravte na 100 000 Kč</strong></span></div>`;
+            } else {
+                analysis += `<div class="flex items-start"><span class="text-green-500 mr-2">✓</span><span class="text-sm"><strong>Celkem: 100 000 Kč - správně rozděleno</strong></span></div>`;
+            }
+            
+            analysis += '</div>';
+            
+            document.getElementById('analysisContent').innerHTML = analysis;
+        }
+
+        function startQuiz() {
+            document.getElementById('lesson5').classList.add('hidden');
+            document.getElementById('quiz').classList.remove('hidden');
+            currentLesson = 6;
+            updateProgress(6);
+            
+            currentQuestionIndex = 0;
+            quizScore = 0;
+            selectedAnswer = null;
+            
+            showQuestion();
+        }
+
+        function showQuestion() {
+            const question = quizQuestions[currentQuestionIndex];
+            
+            document.getElementById('currentQuestion').textContent = currentQuestionIndex + 1;
+            document.getElementById('currentScore').textContent = quizScore;
+            document.getElementById('quizProgress').style.width = ((currentQuestionIndex + 1) / 10) * 100 + '%';
+            
+            document.getElementById('questionText').textContent = question.question;
+            
+            const answersContainer = document.getElementById('answersContainer');
+            answersContainer.innerHTML = '';
+            
+            question.answers.forEach((answer, index) => {
+                const answerDiv = document.createElement('div');
+                answerDiv.className = 'answer-option bg-gray-50 border-2 border-gray-200 p-4 rounded-lg cursor-pointer hover:border-blue-300 transition-colors';
+                answerDiv.innerHTML = `
+                    <div class="flex items-center">
+                        <div class="w-6 h-6 border-2 border-gray-300 rounded-full mr-3 flex items-center justify-center">
+                            <div class="w-3 h-3 bg-blue-600 rounded-full hidden answer-dot"></div>
+                        </div>
+                        <span>${answer}</span>
+                    </div>
+                `;
+                
+                answerDiv.addEventListener('click', () => selectAnswer(index, answerDiv));
+                answersContainer.appendChild(answerDiv);
+            });
+            
+            document.getElementById('questionFeedback').classList.add('hidden');
+            document.getElementById('nextQuestionBtn').classList.add('hidden');
+        }
+
+        function selectAnswer(answerIndex, answerElement) {
+            // Remove selection from all answers
+            document.querySelectorAll('.answer-option').forEach(option => {
+                option.classList.remove('border-blue-500', 'bg-blue-50');
+                option.querySelector('.answer-dot').classList.add('hidden');
+            });
+            
+            // Select clicked answer
+            answerElement.classList.add('border-blue-500', 'bg-blue-50');
+            answerElement.querySelector('.answer-dot').classList.remove('hidden');
+            
+            selectedAnswer = answerIndex;
+            
+            // Show feedback immediately
+            showAnswerFeedback();
+        }
+
+        function showAnswerFeedback() {
+            if (selectedAnswer === null) return;
+            
+            const question = quizQuestions[currentQuestionIndex];
+            const isCorrect = selectedAnswer === question.correct;
+            
+            if (isCorrect) {
+                quizScore++;
+            }
+            
+            // Update score display
+            document.getElementById('currentScore').textContent = quizScore;
+            
+            // Color the answers
+            const answerOptions = document.querySelectorAll('.answer-option');
+            answerOptions.forEach((option, index) => {
+                if (index === question.correct) {
+                    option.classList.remove('border-gray-200', 'border-blue-500', 'bg-blue-50');
+                    option.classList.add('border-green-500', 'bg-green-50');
+                } else if (index === selectedAnswer && !isCorrect) {
+                    option.classList.remove('border-gray-200', 'border-blue-500', 'bg-blue-50');
+                    option.classList.add('border-red-500', 'bg-red-50');
+                }
+                option.style.pointerEvents = 'none';
+            });
+            
+            // Show feedback
+            const feedbackDiv = document.getElementById('questionFeedback');
+            if (isCorrect) {
+                feedbackDiv.innerHTML = `
+                    <div class="bg-green-50 border border-green-200 p-4 rounded-lg">
+                        <h4 class="font-semibold text-green-800">✅ Správně!</h4>
+                        <p class="text-green-700">Výborná odpověď. Pokračujte dál!</p>
+                    </div>
+                `;
+            } else {
+                feedbackDiv.innerHTML = `
+                    <div class="bg-red-50 border border-red-200 p-4 rounded-lg">
+                        <h4 class="font-semibold text-red-800">❌ Nesprávně</h4>
+                        <p class="text-red-700">Správná odpověď je: <strong>${question.answers[question.correct]}</strong></p>
+                    </div>
+                `;
+            }
+            
+            feedbackDiv.classList.remove('hidden');
+            document.getElementById('nextQuestionBtn').classList.remove('hidden');
+        }
+
+        function nextQuestion() {
+            currentQuestionIndex++;
+            selectedAnswer = null;
+            
+            if (currentQuestionIndex < quizQuestions.length) {
+                showQuestion();
+            } else {
+                showQuizResults();
+            }
+        }
+
+        function showQuizResults() {
+            document.getElementById('quiz').classList.add('hidden');
+            document.getElementById('quizResults').classList.remove('hidden');
+            updateProgress(7);
+            
+            const percentage = Math.round((quizScore / quizQuestions.length) * 100);
+            
+            document.getElementById('finalScore').textContent = `${quizScore}/${quizQuestions.length}`;
+            document.getElementById('scorePercentage').textContent = `${percentage}% správně`;
+            
+            // Set emoji based on score
+            let emoji = '🎉';
+            if (percentage >= 90) emoji = '🏆';
+            else if (percentage >= 80) emoji = '🎉';
+            else if (percentage >= 70) emoji = '👍';
+            else if (percentage >= 60) emoji = '📚';
+            else emoji = '🤔';
+            
+            document.getElementById('resultEmoji').textContent = emoji;
+            
+            // Analysis
+            let analysis = '';
+            if (percentage >= 90) {
+                analysis = `<div class="text-green-700">
+                    <h4 class="font-semibold mb-2">Vynikající výsledek! 🏆</h4>
+                    <p>Perfektně rozumíte konceptu likvidity a všem souvisejícím tématům. Jste připraveni efektivně řídit svou finanční likviditu.</p>
+                </div>`;
+            } else if (percentage >= 80) {
+                analysis = `<div class="text-blue-700">
+                    <h4 class="font-semibold mb-2">Velmi dobrý výsledek! 🎉</h4>
+                    <p>Máte solidní znalosti o likviditě. Jen několik detailů by stálo za zopakování, ale celkově jste na dobré cestě.</p>
+                </div>`;
+            } else if (percentage >= 70) {
+                analysis = `<div class="text-yellow-700">
+                    <h4 class="font-semibold mb-2">Dobrý výsledek! 👍</h4>
+                    <p>Základy likvidity znáte, ale některé oblasti by stálo za prohloubení. Doporučujeme si projít kurz znovu.</p>
+                </div>`;
+            } else if (percentage >= 60) {
+                analysis = `<div class="text-orange-700">
+                    <h4 class="font-semibold mb-2">Slušný pokus! 📚</h4>
+                    <p>Máte základní představu o likviditě, ale je potřeba více studia. Projděte si kurz znovu a zaměřte se na praktické příklady.</p>
+                </div>`;
+            } else {
+                analysis = `<div class="text-red-700">
+                    <h4 class="font-semibold mb-2">Potřebujete více studia 🤔</h4>
+                    <p>Likvidita je důležité téma pro vaše finance. Doporučujeme projít celý kurz znovu a věnovat více času každé lekci.</p>
+                </div>`;
+            }
+            
+            document.getElementById('resultAnalysis').innerHTML = analysis;
+            
+            // Recommendations
+            let recommendations = '';
+            if (percentage >= 80) {
+                recommendations = `
+                    <ul class="space-y-2 text-blue-700">
+                        <li class="flex items-start"><span class="text-blue-500 mr-2">•</span>Začněte aplikovat naučené zásady ve svých financích</li>
+                        <li class="flex items-start"><span class="text-blue-500 mr-2">•</span>Pravidelně sledujte svou likviditu</li>
+                        <li class="flex items-start"><span class="text-blue-500 mr-2">•</span>Sdílejte znalosti s přáteli a rodinou</li>
+                    </ul>
+                `;
+            } else {
+                recommendations = `
+                    <ul class="space-y-2 text-blue-700">
+                        <li class="flex items-start"><span class="text-blue-500 mr-2">•</span>Projděte si kurz znovu, zejména lekce s nižším skóre</li>
+                        <li class="flex items-start"><span class="text-blue-500 mr-2">•</span>Vyzkoušejte si praktické kalkulačky znovu</li>
+                        <li class="flex items-start"><span class="text-blue-500 mr-2">•</span>Zaměřte se na pochopení základních pojmů</li>
+                    </ul>
+                `;
+            }
+            
+            document.getElementById('recommendations').innerHTML = recommendations;
+        }
+
+        function goToIntro() {
+            document.querySelectorAll('[id^="lesson"], #quiz, #quizResults').forEach(el => el.classList.add('hidden'));
+            document.getElementById('intro').classList.remove('hidden');
+            currentLesson = 0;
+            updateProgress(0);
+        }
+
+        function previousLesson(lessonNumber) {
+            document.querySelectorAll('[id^="lesson"], #quiz, #quizResults').forEach(el => el.classList.add('hidden'));
+            document.getElementById('lesson' + lessonNumber).classList.remove('hidden');
+            currentLesson = lessonNumber;
+            updateProgress(lessonNumber);
+        }
+
+        function goBackToLesson5() {
+            document.getElementById('quiz').classList.add('hidden');
+            document.getElementById('lesson5').classList.remove('hidden');
+            currentLesson = 5;
+            updateProgress(5);
+        }
+
+        function restartCourse() {
+            // Reset all variables
+            currentLesson = 0;
+            currentQuestionIndex = 0;
+            quizScore = 0;
+            selectedAnswer = null;
+            
+            // Hide all sections
+            document.querySelectorAll('[id^="lesson"], #quiz, #quizResults').forEach(el => el.classList.add('hidden'));
+            
+            // Show intro
+            document.getElementById('intro').classList.remove('hidden');
+            
+            // Reset progress
+            updateProgress(0);
+            
+            // Reset lesson 2 drag and drop
+            const dragItems = document.getElementById('dragItems');
+            const originalItems = [
+                { text: '💵 Hotovost', correct: 'immediate' },
+                { text: '🏦 Běžný účet', correct: 'immediate' },
+                { text: '📈 Akcie velkých firem', correct: 'short' },
+                { text: '💎 Zlato', correct: 'short' },
+                { text: '🏠 Nemovitost', correct: 'long' },
+                { text: '🎨 Umělecká díla', correct: 'long' }
+            ];
+            
+            dragItems.innerHTML = '';
+            originalItems.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'drag-item bg-white border-2 border-gray-300 px-4 py-2 rounded-lg cursor-move';
+                div.draggable = true;
+                div.dataset.correct = item.correct;
+                div.textContent = item.text;
+                dragItems.appendChild(div);
+            });
+            
+            // Clear drop zones
+            document.querySelectorAll('.dropped-items').forEach(zone => {
+                zone.innerHTML = '';
+            });
+            
+            // Reset lesson 2 buttons
+            document.getElementById('checkLesson2').classList.remove('hidden');
+            document.getElementById('nextLesson2').classList.add('hidden');
+            document.getElementById('lesson2Feedback').classList.add('hidden');
+            
+            // Reset form inputs
+            document.querySelectorAll('input[type="number"], input[type="range"]').forEach(input => {
+                input.value = input.defaultValue || '';
+            });
+            
+            // Reset allocation sliders to default values
+            document.getElementById('cashSlider').value = 20000;
+            document.getElementById('savingsSlider').value = 30000;
+            document.getElementById('stocksSlider').value = 30000;
+            document.getElementById('longTermSlider').value = 20000;
+            updateAllocation();
+            
+            // Re-setup drag and drop
+            setupDragAndDrop();
+        }
+
+        // Initialize drag and drop when page loads
+        window.addEventListener('load', function() {
+            setupDragAndDrop();
+            updateAllocation();
+        });
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'986328803195b605',t:'MTc1OTA2MTY0Mi4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
